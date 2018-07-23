@@ -8,6 +8,10 @@ The changelog for `MessageKit`. Also see the [releases](https://github.com/Messa
 
 ### Added
 
+- **Breaking Change** Added typing indicator support to MessageKit by adding an extra section to `MessagesCollectionView` when needed. This included adding the following views: `BubbleCircle`, `TypingBubble`, `TypingIndicator`, `TypingBubbleCell`. Determine if the section is reserved for the typing indicator with `isSectionReservedForTypingIndicator(_ section: Int) -> Bool`, and set the typing indicators visiability with `setTypingIndicatorHidden(_ isHidden: Bool, animated: Bool, whilePerforming updates: (() -> Void)? = nil, completion: ((Bool) -> Void)?=nil)`
+
+TypingMessageSizeCalculator.swift
+
 - Added customizable `accessoryView`, with a new `MessagesDisplayDelegate` function `configureAccessoryView`, and corresponding size & padding properties in `MessageSizeCalculator`. [#710](https://github.com/MessageKit/MessageKit/pull/710) by [@hyouuu](https://github.com/hyouuu)
 
 ## [1.0.0](https://github.com/MessageKit/MessageKit/releases/tag/1.0.0)
