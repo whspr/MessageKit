@@ -28,7 +28,7 @@ import UIKit
 open class MessageContentCell: MessageCollectionViewCell {
 
     /// The image view displaying the avatar.
-    open var avatarView = AvatarView()
+//    open var avatarView = AvatarView()
 
     /// The container used for styling and holding the message's content view.
     open var messageContainerView: MessageContainerView = {
@@ -78,7 +78,7 @@ open class MessageContentCell: MessageCollectionViewCell {
         contentView.addSubview(messageTopLabel)
         contentView.addSubview(messageBottomLabel)
         contentView.addSubview(messageContainerView)
-        contentView.addSubview(avatarView)
+//        contentView.addSubview(avatarView)
     }
 
     open override func prepareForReuse() {
@@ -98,7 +98,7 @@ open class MessageContentCell: MessageCollectionViewCell {
         layoutBottomLabel(with: attributes)
         layoutCellTopLabel(with: attributes)
         layoutMessageTopLabel(with: attributes)
-        layoutAvatarView(with: attributes)
+//        layoutAvatarView(with: attributes)
     }
 
     /// Used to configure the cell.
@@ -120,7 +120,7 @@ open class MessageContentCell: MessageCollectionViewCell {
         let messageColor = displayDelegate.backgroundColor(for: message, at: indexPath, in: messagesCollectionView)
         let messageStyle = displayDelegate.messageStyle(for: message, at: indexPath, in: messagesCollectionView)
 
-        displayDelegate.configureAvatarView(avatarView, for: message, at: indexPath, in: messagesCollectionView)
+//        displayDelegate.configureAvatarView(avatarView, for: message, at: indexPath, in: messagesCollectionView)
 
         messageContainerView.backgroundColor = messageColor
         messageContainerView.style = messageStyle
@@ -141,8 +141,8 @@ open class MessageContentCell: MessageCollectionViewCell {
         switch true {
         case messageContainerView.frame.contains(touchLocation) && !cellContentView(canHandle: convert(touchLocation, to: messageContainerView)):
             delegate?.didTapMessage(in: self)
-        case avatarView.frame.contains(touchLocation):
-            delegate?.didTapAvatar(in: self)
+//        case avatarView.frame.contains(touchLocation):
+//            delegate?.didTapAvatar(in: self)
         case cellTopLabel.frame.contains(touchLocation):
             delegate?.didTapCellTopLabel(in: self)
         case messageTopLabel.frame.contains(touchLocation):
@@ -197,7 +197,7 @@ open class MessageContentCell: MessageCollectionViewCell {
             break
         }
 
-        avatarView.frame = CGRect(origin: origin, size: attributes.avatarSize)
+//        avatarView.frame = CGRect(origin: origin, size: attributes.avatarSize)
     }
 
     /// Positions the cell's `MessageContainerView`.

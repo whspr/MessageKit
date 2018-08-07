@@ -32,23 +32,26 @@ open class MessageSizeCalculator: CellSizeCalculator {
         self.layout = layout
     }
 
-    public var incomingAvatarSize = CGSize(width: 30, height: 30)
-    public var outgoingAvatarSize = CGSize(width: 30, height: 30)
+//    public var incomingAvatarSize = CGSize(width: 30, height: 30)
+//    public var outgoingAvatarSize = CGSize(width: 30, height: 30)
+    
+    public var incomingAvatarSize = CGSize.zero
+    public var outgoingAvatarSize = CGSize.zero
 
     public var incomingAvatarPosition = AvatarPosition(vertical: .cellBottom)
     public var outgoingAvatarPosition = AvatarPosition(vertical: .cellBottom)
 
-    public var incomingMessagePadding = UIEdgeInsets(top: 0, left: 4, bottom: 0, right: 30)
-    public var outgoingMessagePadding = UIEdgeInsets(top: 0, left: 30, bottom: 0, right: 4)
+    public var incomingMessagePadding = UIEdgeInsets(top: 0, left: 4, bottom: 0, right: 20)
+    public var outgoingMessagePadding = UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 4)
 
     public var incomingCellTopLabelAlignment = LabelAlignment(textAlignment: .center, textInsets: .zero)
     public var outgoingCellTopLabelAlignment = LabelAlignment(textAlignment: .center, textInsets: .zero)
 
-    public var incomingMessageTopLabelAlignment = LabelAlignment(textAlignment: .left, textInsets: UIEdgeInsets(left: 42))
-    public var outgoingMessageTopLabelAlignment = LabelAlignment(textAlignment: .right, textInsets: UIEdgeInsets(right: 42))
+    public var incomingMessageTopLabelAlignment = LabelAlignment(textAlignment: .left, textInsets: UIEdgeInsets(left: 20))
+    public var outgoingMessageTopLabelAlignment = LabelAlignment(textAlignment: .right, textInsets: UIEdgeInsets(right: 20))
 
-    public var incomingMessageBottomLabelAlignment = LabelAlignment(textAlignment: .left, textInsets: UIEdgeInsets(left: 42))
-    public var outgoingMessageBottomLabelAlignment = LabelAlignment(textAlignment: .right, textInsets: UIEdgeInsets(right: 42))
+    public var incomingMessageBottomLabelAlignment = LabelAlignment(textAlignment: .left, textInsets: UIEdgeInsets(left: 20))
+    public var outgoingMessageBottomLabelAlignment = LabelAlignment(textAlignment: .right, textInsets: UIEdgeInsets(right: 20))
 
     open override func configure(attributes: UICollectionViewLayoutAttributes) {
         guard let attributes = attributes as? MessagesCollectionViewLayoutAttributes else { return }

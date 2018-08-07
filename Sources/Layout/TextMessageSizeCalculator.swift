@@ -48,11 +48,12 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
 
         var messageContainerSize: CGSize
         let attributedText: NSAttributedString
-
+        var isText: Bool = false
         switch message.kind {
         case .attributedText(let text):
             attributedText = text
         case .text(let text), .emoji(let text):
+            isText = true
             attributedText = NSAttributedString(string: text, attributes: [.font: messageLabelFont])
         default:
             fatalError("messageContainerSize received unhandled MessageDataType: \(message.kind)")
@@ -63,7 +64,9 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
         let messageInsets = messageLabelInsets(for: message)
         messageContainerSize.width += messageInsets.horizontal
         messageContainerSize.height += messageInsets.vertical
-
+        if messageContainerSize.width < 160.0 && isText {
+            messageContainerSize.width = 160.0
+        }
         return messageContainerSize
     }
 

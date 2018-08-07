@@ -129,9 +129,9 @@ public enum MessageStyle {
         case .bubbleOutline:
             return "bubble_outlined"
         case .bubbleTail(_, let tailStyle):
-            return "bubble_full" + tailStyle.imageNameSuffix
+            return "square_full" + tailStyle.imageNameSuffix
         case .bubbleTailOutline(_, _, let tailStyle):
-            return "bubble_outlined" + tailStyle.imageNameSuffix
+            return "square_outlined" + tailStyle.imageNameSuffix
         case .none, .custom:
             return nil
         }

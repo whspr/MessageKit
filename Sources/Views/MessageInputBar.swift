@@ -150,7 +150,7 @@ open class MessageInputBar: UIView {
      ````
      
      */
-    open var padding: UIEdgeInsets = UIEdgeInsets(top: 6, left: 12, bottom: 6, right: 12) {
+    open var padding: UIEdgeInsets = UIEdgeInsets(top: 6, left: 8, bottom: 6, right: 8) {
         didSet {
             updatePadding()
         }
