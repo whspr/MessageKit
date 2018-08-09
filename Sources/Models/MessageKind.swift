@@ -42,9 +42,15 @@ public enum MessageKind {
     /// A photo message.
     case photo(MediaItem)
 
+    // Message with array of photo.
+    case photos([MediaItem])
+    
     /// A video message.
     case video(MediaItem)
 
+    /// Message with array of video.
+    case videos([MediaItem])
+    
     /// A location message.
     case location(LocationItem)
 

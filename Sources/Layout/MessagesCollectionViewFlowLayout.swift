@@ -132,7 +132,9 @@ open class MessagesCollectionViewFlowLayout: UICollectionViewFlowLayout {
         return sizeCalculator
     }()
     lazy open var photoMessageSizeCalculator = MediaMessageSizeCalculator(layout: self)
+    lazy open var photosMessageSizeCalculator = MediaMessageSizeCalculator(layout: self)
     lazy open var videoMessageSizeCalculator = MediaMessageSizeCalculator(layout: self)
+    lazy open var videosMessageSizeCalculator = MediaMessageSizeCalculator(layout: self)
     lazy open var locationMessageSizeCalculator = LocationMessageSizeCalculator(layout: self)
 
     open func cellSizeCalculatorForItem(at indexPath: IndexPath) -> CellSizeCalculator {
@@ -152,6 +154,10 @@ open class MessagesCollectionViewFlowLayout: UICollectionViewFlowLayout {
             return locationMessageSizeCalculator
         case .custom:
             fatalError("Must return a CellSizeCalculator for MessageKind.custom(Any?)")
+        case .photos(_):
+            return photosMessageSizeCalculator
+        case .videos(_):
+            return videosMessageSizeCalculator
         }
     }
 
@@ -222,7 +228,7 @@ open class MessagesCollectionViewFlowLayout: UICollectionViewFlowLayout {
     
     /// Get all `MessageSizeCalculator`s
     open func messageSizeCalculators() -> [MessageSizeCalculator] {
-        return [textMessageSizeCalculator, attributedTextMessageSizeCalculator, emojiMessageSizeCalculator, photoMessageSizeCalculator, videoMessageSizeCalculator, locationMessageSizeCalculator]
+        return [textMessageSizeCalculator, attributedTextMessageSizeCalculator, emojiMessageSizeCalculator, photoMessageSizeCalculator, photosMessageSizeCalculator, videoMessageSizeCalculator, videosMessageSizeCalculator, locationMessageSizeCalculator]
     }
     
 }

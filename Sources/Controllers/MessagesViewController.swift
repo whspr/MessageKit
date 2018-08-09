@@ -191,6 +191,10 @@ UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
             return cell
         case .custom:
             fatalError(MessageKitError.customDataUnresolvedCell)
+        case .photos(_):
+            fatalError(MessageKitError.customDataUnresolvedCell)
+        case .videos(_):
+            fatalError(MessageKitError.customDataUnresolvedCell)
         }
     }
 
