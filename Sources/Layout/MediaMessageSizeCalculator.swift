@@ -32,32 +32,27 @@ open class MediaMessageSizeCalculator: MessageSizeCalculator {
             if maxWidth < item.size.width {
                 // Maintain the ratio if width is too great
                 let height = maxWidth * item.size.height / item.size.width
+                if height > maxWidth {
+                    return CGSize(width: maxWidth, height: maxWidth)
+                }
                 return CGSize(width: maxWidth, height: height)
             }
             return item.size
         }
         
-        let sizeForMediaItems = { (maxWidth: CGFloat, items: [MediaItem]) -> CGSize in
-            if items.count == 0 {
-                fatalError("cant calculate size for media items, array is empty")
-            }
-            if items.count > 1 {
-                let rowHeight = (maxWidth / 2) * items[0].size.height / items[0].size.width
-                let rowsCount = CGFloat((items.count + items.count % 2) / 2)
-                return CGSize(width: maxWidth, height: rowHeight * rowsCount)
-            }
-            return sizeForMediaItem(maxWidth, items[0])
+        let sizeForMediaItems = { (maxWidth: CGFloat, item: MediaItem) -> CGSize in
+            return CGSize(width: maxWidth, height: maxWidth)
         }
         
         switch message.kind {
         case .photo(let item):
             return sizeForMediaItem(maxWidth, item)
         case .photos(let items):
-            return sizeForMediaItems(maxWidth, items)
+            return sizeForMediaItems(maxWidth, items[0])
         case .video(let item):
             return sizeForMediaItem(maxWidth, item)
         case .videos(let items):
-            return sizeForMediaItems(maxWidth, items)
+            return sizeForMediaItem(maxWidth, items[0])
         default:
             fatalError("messageContainerSize received unhandled MessageDataType: \(message.kind)")
         }

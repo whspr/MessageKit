@@ -192,7 +192,9 @@ UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
         case .custom:
             fatalError(MessageKitError.customDataUnresolvedCell)
         case .photos(_):
-            fatalError(MessageKitError.customDataUnresolvedCell)
+            let cell = messagesCollectionView.dequeueReusableCell(MediaMessageCell.self, for: indexPath)
+            cell.configure(with: message, at: indexPath, and: messagesCollectionView)
+            return cell
         case .videos(_):
             fatalError(MessageKitError.customDataUnresolvedCell)
         }
@@ -209,9 +211,9 @@ UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
         }
 
         switch kind {
-        case UICollectionElementKindSectionHeader:
+        case UICollectionView.elementKindSectionHeader:
             return displayDelegate.messageHeaderView(for: indexPath, in: messagesCollectionView)
-        case UICollectionElementKindSectionFooter:
+        case UICollectionView.elementKindSectionFooter:
             return displayDelegate.messageFooterView(for: indexPath, in: messagesCollectionView)
         default:
             fatalError(MessageKitError.unrecognizedSectionKind)
@@ -286,11 +288,11 @@ UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
     
     private func addObservers() {
         NotificationCenter.default.addObserver(
-            self, selector: #selector(clearMemoryCache), name: .UIApplicationDidReceiveMemoryWarning, object: nil)
+            self, selector: #selector(clearMemoryCache), name: UIApplication.didReceiveMemoryWarningNotification, object: nil)
     }
     
     private func removeObservers() {
-        NotificationCenter.default.removeObserver(self, name: .UIApplicationDidReceiveMemoryWarning, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIApplication.didReceiveMemoryWarningNotification, object: nil)
     }
     
     @objc private func clearMemoryCache() {

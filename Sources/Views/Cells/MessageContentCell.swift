@@ -132,6 +132,9 @@ open class MessageContentCell: MessageCollectionViewCell {
         cellTopLabel.attributedText = topCellLabelText
         messageTopLabel.attributedText = topMessageLabelText
         messageBottomLabel.attributedText = bottomText
+        messageBottomLabel.superview?.bringSubviewToFront(messageBottomLabel)
+        
+        
     }
 
     /// Handle tap gesture on contentView and its subviews.
@@ -252,13 +255,40 @@ open class MessageContentCell: MessageCollectionViewCell {
     /// Positions the cell's bottom label.
     /// - attributes: The `MessagesCollectionViewLayoutAttributes` for the cell.
     open func layoutBottomLabel(with attributes: MessagesCollectionViewLayoutAttributes) {
+        
         messageBottomLabel.textAlignment = attributes.messageBottomLabelAlignment.textAlignment
         messageBottomLabel.textInsets = attributes.messageBottomLabelAlignment.textInsets
+        
+        // check is our bottom label from income message
+        if messageBottomLabel.textAlignment == .left {
+            // change text aligment to .right
+            messageBottomLabel.textAlignment = .right
+            // calc right offset for label + padding from right message edge
+            messageBottomLabel.textInsets = UIEdgeInsets(right: attributes.frame.width - attributes.messageContainerSize.width + 8)
+        }
 
-        let y = messageContainerView.frame.maxY + attributes.messageContainerPadding.bottom
+        // put our bottom label into message via setting upper Y coord
+        let y = messageContainerView.frame.maxY - 16
         let origin = CGPoint(x: 0, y: y)
-
         messageBottomLabel.frame = CGRect(origin: origin, size: attributes.messageBottomLabelSize)
+        
+        let rect = messageContainerView.frame
+        if rect.minX < frame.width / 2 {
+            layer.addShadow(CGRect(x: rect.minX + 6, y: rect.minY, width: rect.width - 6, height: rect.height))
+        } else {
+            layer.addShadow(CGRect(x: rect.minX, y: rect.minY, width: rect.width - 6, height: rect.height + 1))
+        }
     }
     
+}
+
+fileprivate extension CALayer {
+    func addShadow(_ rect: CGRect) {
+        self.masksToBounds = true
+        self.shadowOffset = .zero
+        self.shadowOpacity = 0.1
+        self.shadowRadius = 4
+        self.shadowColor = UIColor.black.cgColor
+        self.shadowPath = CGPath(roundedRect: rect, cornerWidth: 4, cornerHeight: 4, transform: nil)
+    }
 }

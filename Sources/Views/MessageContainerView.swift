@@ -54,6 +54,8 @@ open class MessageContainerView: UIImageView {
     }
 
     private func applyMessageStyle() {
+        
+        self.clipsToBounds = true
         switch style {
         case .bubble, .bubbleTail:
             imageMask.image = style.image
@@ -61,7 +63,7 @@ open class MessageContainerView: UIImageView {
             mask = imageMask
             image = nil
         case .bubbleOutline(let color):
-            let bubbleStyle: MessageStyle = .bubble
+            let bubbleStyle: MessageStyle = .bubble(.bottomRight)
             imageMask.image = bubbleStyle.image
             sizeMaskToView()
             mask = imageMask

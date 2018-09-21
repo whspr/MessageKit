@@ -67,9 +67,9 @@ open class MessagesCollectionViewFlowLayout: UICollectionViewFlowLayout {
     public override init() {
         super.init()
 
-        sectionInset = UIEdgeInsets(top: 4, left: 8, bottom: 4, right: 8)
+        sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
 
-        NotificationCenter.default.addObserver(self, selector: #selector(MessagesCollectionViewFlowLayout.handleOrientationChange(_:)), name: .UIDeviceOrientationDidChange, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(MessagesCollectionViewFlowLayout.handleOrientationChange(_:)), name: UIDevice.orientationDidChangeNotification, object: nil)
     }
 
     required public init?(coder aDecoder: NSCoder) {

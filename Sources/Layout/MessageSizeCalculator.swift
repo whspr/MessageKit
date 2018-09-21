@@ -50,7 +50,7 @@ open class MessageSizeCalculator: CellSizeCalculator {
     public var incomingMessageTopLabelAlignment = LabelAlignment(textAlignment: .left, textInsets: UIEdgeInsets(left: 20))
     public var outgoingMessageTopLabelAlignment = LabelAlignment(textAlignment: .right, textInsets: UIEdgeInsets(right: 20))
 
-    public var incomingMessageBottomLabelAlignment = LabelAlignment(textAlignment: .left, textInsets: UIEdgeInsets(left: 20))
+    public var incomingMessageBottomLabelAlignment = LabelAlignment(textAlignment: .left, textInsets: UIEdgeInsets(right: 20))
     public var outgoingMessageBottomLabelAlignment = LabelAlignment(textAlignment: .right, textInsets: UIEdgeInsets(right: 20))
 
     open override func configure(attributes: UICollectionViewLayoutAttributes) {
@@ -89,7 +89,7 @@ open class MessageSizeCalculator: CellSizeCalculator {
         let messageVerticalPadding = messageContainerPadding(for: message).vertical
         let avatarHeight = avatarSize(for: message).height
         let avatarVerticalPosition = avatarPosition(for: message).vertical
-
+        
         switch avatarVerticalPosition {
         case .messageCenter:
             let totalLabelHeight: CGFloat = cellTopLabelHeight + messageTopLabelHeight
@@ -116,7 +116,7 @@ open class MessageSizeCalculator: CellSizeCalculator {
             return cellHeight
         case .cellTop, .cellBottom:
             let totalLabelHeight: CGFloat = cellTopLabelHeight + messageTopLabelHeight
-                + messageContainerHeight + messageVerticalPadding + messageBottomLabelHeight
+                + messageContainerHeight + messageVerticalPadding + 4// + messageBottomLabelHeight
             return max(avatarHeight, totalLabelHeight)
         }
     }
@@ -202,7 +202,7 @@ open class MessageSizeCalculator: CellSizeCalculator {
     }
 
     open func messageContainerMaxWidth(for message: MessageType) -> CGFloat {
-        let avatarWidth = avatarSize(for: message).width
+        let avatarWidth = CGFloat(48)//avatarSize(for: message).width
         let messagePadding = messageContainerPadding(for: message)
         return messagesLayout.itemWidth - avatarWidth - messagePadding.horizontal
     }
@@ -224,7 +224,7 @@ open class MessageSizeCalculator: CellSizeCalculator {
     }
 }
 
-fileprivate extension UIEdgeInsets {
+extension UIEdgeInsets {
     init(top: CGFloat = 0, bottom: CGFloat = 0, left: CGFloat = 0, right: CGFloat = 0) {
         self.init(top: top, left: left, bottom: bottom, right: right)
     }

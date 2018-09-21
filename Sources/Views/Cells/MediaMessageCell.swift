@@ -39,6 +39,8 @@ open class MediaMessageCell: MessageContentCell {
         imageView.contentMode = .scaleAspectFill
         return imageView
     }()
+    
+    open var collectionSubview: UIView = UIView()
 
     // MARK: - Methods
 
@@ -47,11 +49,13 @@ open class MediaMessageCell: MessageContentCell {
         imageView.fillSuperview()
         playButtonView.centerInSuperview()
         playButtonView.constraint(equalTo: CGSize(width: 35, height: 35))
+        collectionSubview.fillSuperview()
     }
 
     open override func setupSubviews() {
         super.setupSubviews()
         messageContainerView.addSubview(imageView)
+        messageContainerView.addSubview(collectionSubview)
         messageContainerView.addSubview(playButtonView)
         setupConstraints()
     }
@@ -63,13 +67,81 @@ open class MediaMessageCell: MessageContentCell {
             fatalError(MessageKitError.nilMessagesDisplayDelegate)
         }
 
+        collectionSubview.subviews.forEach { view in
+            view.removeFromSuperview()
+        }
+        
         switch message.kind {
         case .photo(let mediaItem):
             imageView.image = mediaItem.image ?? mediaItem.placeholderImage
             playButtonView.isHidden = true
+            break
         case .video(let mediaItem):
             imageView.image = mediaItem.image ?? mediaItem.placeholderImage
             playButtonView.isHidden = false
+            break
+        case .photos(let mediaItems):
+            playButtonView.isHidden = true
+            imageView.image = nil
+            let halfPadding = CGFloat(2)
+            let parentFrame = messageContainerView.bounds
+//            let parentFrame =  CGRect(x: messageContainerView.bounds.minX, y: messageContainerView.bounds.minY, width: messageContainerView.bounds.width, height: messageContainerView.bounds.height - 16)
+            var rects: [CGRect] = []
+            switch mediaItems.count < 7 ? mediaItems.count : 6 {
+            case 2:
+                rects.append(CGRect(x: 0, y: 0, width: parentFrame.width / 2 - halfPadding, height: parentFrame.height))
+                rects.append(CGRect(x: parentFrame.width / 2 + halfPadding, y: 0, width: parentFrame.width / 2, height: parentFrame.height))
+                break
+            case 3:
+                rects.append(CGRect(x: 0, y: 0, width: parentFrame.width / 2 - halfPadding, height: parentFrame.height))
+                rects.append(CGRect(x: parentFrame.width / 2 + halfPadding, y: 0, width: parentFrame.width / 2, height: parentFrame.height / 2 - halfPadding))
+                rects.append(CGRect(x: parentFrame.width / 2 + halfPadding, y: parentFrame.height / 2 + halfPadding, width: parentFrame.width / 2, height: parentFrame.height / 2))
+                break
+            case 4:
+                rects.append(CGRect(x: 0, y: 0, width: (parentFrame.width / 5) * 3 - halfPadding, height: parentFrame.height))
+                rects.append(CGRect(x: (parentFrame.width / 5) * 3 + halfPadding, y: 0, width: parentFrame.width / 2, height: parentFrame.height / 3 - halfPadding))
+                rects.append(CGRect(x: (parentFrame.width / 5) * 3 + halfPadding, y: parentFrame.height / 3 + halfPadding, width: parentFrame.width / 2, height: parentFrame.height / 3 - halfPadding * 2))
+                rects.append(CGRect(x: (parentFrame.width / 5) * 3 + halfPadding, y: (parentFrame.height / 3) * 2 + halfPadding, width: parentFrame.width / 2, height: parentFrame.height / 3))
+                break
+            case 5:
+                rects.append(CGRect(x: 0, y: 0, width: (parentFrame.width / 5) * 3 - halfPadding, height: parentFrame.height / 2 - halfPadding))
+                rects.append(CGRect(x: 0, y: parentFrame.height / 2 + halfPadding, width: (parentFrame.width / 5) * 3 - halfPadding, height: parentFrame.height / 2 - halfPadding))
+                rects.append(CGRect(x: (parentFrame.width / 5) * 3 + halfPadding, y: 0, width: parentFrame.width / 2, height: parentFrame.height / 3 - halfPadding))
+                rects.append(CGRect(x: (parentFrame.width / 5) * 3 + halfPadding, y: parentFrame.height / 3 + halfPadding, width: parentFrame.width / 2, height: parentFrame.height / 3 - halfPadding * 2))
+                rects.append(CGRect(x: (parentFrame.width / 5) * 3 + halfPadding, y: (parentFrame.height / 3) * 2 + halfPadding, width: parentFrame.width / 2, height: parentFrame.height / 3))
+                break
+            case 6:
+                rects.append(CGRect(x: 0, y: 0, width: (parentFrame.width / 5) * 3 - halfPadding, height: (parentFrame.height / 3) * 2 - halfPadding))
+                rects.append(CGRect(x: 0, y: (parentFrame.height / 3) * 2 + halfPadding, width: (parentFrame.width / 10) * 3 - halfPadding, height: parentFrame.height / 2 - halfPadding))
+                rects.append(CGRect(x: (parentFrame.width / 10) * 3 + halfPadding, y: (parentFrame.height / 3) * 2 + halfPadding, width: (parentFrame.width / 10) * 3 - halfPadding * 2, height: parentFrame.height / 3))
+                rects.append(CGRect(x: (parentFrame.width / 5) * 3 + halfPadding, y: 0, width: parentFrame.width / 2, height: parentFrame.height / 3 - halfPadding))
+                rects.append(CGRect(x: (parentFrame.width / 5) * 3 + halfPadding, y: parentFrame.height / 3 + halfPadding, width: parentFrame.width / 2, height: parentFrame.height / 3 - halfPadding * 2))
+                rects.append(CGRect(x: (parentFrame.width / 5) * 3 + halfPadding, y: (parentFrame.height / 3) * 2 + halfPadding, width: parentFrame.width / 2, height: parentFrame.height / 3))
+                break
+            default:break
+            }
+            var mediaId: Int = 0
+            rects.forEach { rect in
+                let view = UIImageView(frame: rect)
+                view.image = mediaItems[mediaId].image ?? mediaItems[mediaId].placeholderImage
+                view.contentMode = .scaleAspectFill
+                view.clipsToBounds = true
+                view.layer.masksToBounds = true
+                mediaId += 1
+                if mediaId == 6 && mediaItems.count > 6 {
+                    let toner = UIView(frame: view.bounds)
+                    toner.backgroundColor = UIColor.black.withAlphaComponent(0.2)
+                    view.addSubview(toner)
+                    let label = UILabel(frame: view.bounds)
+                    label.text = "+\(mediaItems.count - 6)"
+                    label.textAlignment = .center
+                    label.textColor = .white
+                    label.font = UIFont.boldSystemFont(ofSize: 30.0)
+                    view.addSubview(label)
+                }
+                collectionSubview.addSubview(view)
+            }
+            
         default:
             break
         }
