@@ -85,7 +85,6 @@ open class MediaMessageCell: MessageContentCell {
             imageView.image = nil
             let halfPadding = CGFloat(2)
             let parentFrame = messageContainerView.bounds
-//            let parentFrame =  CGRect(x: messageContainerView.bounds.minX, y: messageContainerView.bounds.minY, width: messageContainerView.bounds.width, height: messageContainerView.bounds.height - 16)
             var rects: [CGRect] = []
             switch mediaItems.count < 7 ? mediaItems.count : 6 {
             case 2:

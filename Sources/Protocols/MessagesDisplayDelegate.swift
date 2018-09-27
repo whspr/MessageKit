@@ -57,6 +57,10 @@ public protocol MessagesDisplayDelegate: AnyObject {
     ///   All other senders: Gray
     func backgroundColor(for message: MessageType, at  indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> UIColor
 
+    func isSelected(for message: MessageType, at  indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> Bool
+    
+    func deliveryIndicatorImage(for message: MessageType, at  indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> UIImage?
+    
     /// The section header to use for a given `IndexPath`.
     ///
     /// - Parameters:
@@ -171,6 +175,14 @@ public extension MessagesDisplayDelegate {
         return .bubble(.bottomRight)
     }
 
+    func isSelected(for message: MessageType, at  indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> Bool{
+        return false
+    }
+    
+    func deliveryIndicatorImage(for message: MessageType, at  indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> UIImage? {
+        return nil
+    }
+    
     func backgroundColor(for message: MessageType, at  indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> UIColor {
 
         switch message.kind {

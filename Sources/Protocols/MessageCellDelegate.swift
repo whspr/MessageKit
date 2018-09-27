@@ -27,6 +27,8 @@ import Foundation
 /// A protocol used by `MessageContentCell` subclasses to detect taps in the cell's subviews.
 public protocol MessageCellDelegate: MessageLabelDelegate {
 
+    func didTap(in cell: MessageCollectionViewCell)
+    
     /// Triggered when a tap occurs in the `MessageContainerView`.
     ///
     /// - Parameters:
@@ -78,10 +80,25 @@ public protocol MessageCellDelegate: MessageLabelDelegate {
     /// method `messageForItem(at:indexPath:messagesCollectionView)`.
     func didTapMessageBottomLabel(in cell: MessageCollectionViewCell)
 
+    //Long taps
+    func didLongTap(in cell: MessageCollectionViewCell)
+    
+    func didLongTapMessage(in cell: MessageCollectionViewCell)
+    
+    func didLongTapAvatar(in cell: MessageCollectionViewCell)
+    
+    func didLongTapCellTopLabel(in cell: MessageCollectionViewCell)
+    
+    func didLongTapMessageTopLabel(in cell: MessageCollectionViewCell)
+    
+    func didLongTapMessageBottomLabel(in cell: MessageCollectionViewCell)
+    
 }
 
 public extension MessageCellDelegate {
 
+    func didTap(in cell: MessageCollectionViewCell) {}
+    
     func didTapMessage(in cell: MessageCollectionViewCell) {}
 
     func didTapAvatar(in cell: MessageCollectionViewCell) {}
@@ -91,4 +108,16 @@ public extension MessageCellDelegate {
     func didTapMessageTopLabel(in cell: MessageCollectionViewCell) {}
 
     func didTapMessageBottomLabel(in cell: MessageCollectionViewCell) {}
+    
+    func didLongTap(in cell: MessageCollectionViewCell) {}
+    
+    func didLongTapMessage(in cell: MessageCollectionViewCell) {}
+    
+    func didLongTapAvatar(in cell: MessageCollectionViewCell) {}
+    
+    func didLongTapCellTopLabel(in cell: MessageCollectionViewCell) {}
+    
+    func didLongTapMessageTopLabel(in cell: MessageCollectionViewCell) {}
+    
+    func didLongTapMessageBottomLabel(in cell: MessageCollectionViewCell) {}
 }

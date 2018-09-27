@@ -24,6 +24,60 @@
 
 import UIKit
 
+
+@objc public protocol ReplyForwardDelegate {
+    @objc func onCopy()
+    @objc func onReply()
+    @objc func onForward()
+    @objc func onPin()
+}
+
+open class ReplyForwardView: UIView {
+    
+    open var delegate: ReplyForwardDelegate?
+    
+    open var copyButton: UIButton = {
+        let button = UIButton()
+        
+        return button
+    }()
+    
+    open var pinButton: UIButton = {
+        let button = UIButton()
+        
+        return button
+    }()
+    
+    open var replyButton: UIButton = {
+        let button = UIButton()
+        
+        return button
+    }()
+    
+    open var forwardButton: UIButton = {
+        let button = UIButton()
+        
+        return button
+    }()
+    
+    open func configure(_ prepare: (ReplyForwardView)->Void){
+        prepare(self)
+        
+        self.copyButton.addTarget(self.delegate, action: #selector(self.delegate?.onCopy), for: .touchUpInside)
+        self.replyButton.addTarget(self.delegate, action: #selector(self.delegate?.onReply), for: .touchUpInside)
+        self.forwardButton.addTarget(self.delegate, action: #selector(self.delegate?.onForward), for: .touchUpInside)
+        self.pinButton.addTarget(self.delegate, action: #selector(self.delegate?.onPin), for: .touchUpInside)
+        
+        self.addSubview(self.copyButton)
+        self.addSubview(self.replyButton)
+        self.addSubview(self.forwardButton)
+        self.addSubview(self.pinButton)
+        
+        self.superview?.bringSubviewToFront(self)
+    }
+    
+}
+
 /// A powerful InputAccessoryView ideal for messaging applications
 open class MessageInputBar: UIView {
     
@@ -46,6 +100,12 @@ open class MessageInputBar: UIView {
     open var contentView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
+    open var replyForwardView: ReplyForwardView = {
+        let view = ReplyForwardView()
+//        view.isHidden = true
         return view
     }()
     
@@ -268,6 +328,7 @@ open class MessageInputBar: UIView {
     private var rightStackViewLayoutSet: NSLayoutConstraintSet?
     private var bottomStackViewLayoutSet: NSLayoutConstraintSet?
     private var contentViewLayoutSet: NSLayoutConstraintSet?
+    private var replyForwardViewLayoutSet: NSLayoutConstraintSet?
     private var windowAnchor: NSLayoutConstraint?
     private var backgroundViewBottomAnchor: NSLayoutConstraint?
     
@@ -323,16 +384,19 @@ open class MessageInputBar: UIView {
     
     /// Adds all of the subviews
     private func setupSubviews() {
-        
+        replyForwardView.frame = contentView.frame
         addSubview(backgroundView)
         addSubview(topStackView)
         addSubview(contentView)
         addSubview(separatorLine)
+        replyForwardView.fillSuperview()
         contentView.addSubview(inputTextView)
         contentView.addSubview(leftStackView)
         contentView.addSubview(rightStackView)
         contentView.addSubview(bottomStackView)
         setStackViewItems([sendButton], forStack: .right, animated: false)
+        addSubview(replyForwardView)
+//        contentView.bringSubviewToFront(replyForwardView)
     }
     
     // swiftlint:disable function_body_length colon
@@ -359,11 +423,22 @@ open class MessageInputBar: UIView {
             right:  contentView.rightAnchor.constraint(equalTo: rightAnchor, constant: -padding.right)
         )
         
+        replyForwardViewLayoutSet = NSLayoutConstraintSet(
+            top:    replyForwardView.topAnchor.constraint(equalTo: topStackView.bottomAnchor, constant: padding.top),
+            bottom: replyForwardView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -padding.bottom),
+            left:   replyForwardView.leftAnchor.constraint(equalTo: leftAnchor, constant: padding.left),
+            right:  replyForwardView.rightAnchor.constraint(equalTo: rightAnchor, constant: -padding.right)
+        )
+        
         if #available(iOS 11.0, *) {
             // Switch to safeAreaLayoutGuide
             contentViewLayoutSet?.bottom = contentView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -padding.bottom)
             contentViewLayoutSet?.left = contentView.leftAnchor.constraint(equalTo: safeAreaLayoutGuide.leftAnchor, constant: padding.left)
             contentViewLayoutSet?.right = contentView.rightAnchor.constraint(equalTo: safeAreaLayoutGuide.rightAnchor, constant: -padding.right)
+            
+            replyForwardViewLayoutSet?.bottom = replyForwardView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -padding.bottom)
+            replyForwardViewLayoutSet?.left = replyForwardView.leftAnchor.constraint(equalTo: safeAreaLayoutGuide.leftAnchor, constant: padding.left)
+            replyForwardViewLayoutSet?.right = replyForwardView.rightAnchor.constraint(equalTo: safeAreaLayoutGuide.rightAnchor, constant: -padding.right)
             
             topStackViewLayoutSet?.left = topStackView.leftAnchor.constraint(equalTo: safeAreaLayoutGuide.leftAnchor, constant: topStackViewPadding.left)
             topStackViewLayoutSet?.right = topStackView.rightAnchor.constraint(equalTo: safeAreaLayoutGuide.rightAnchor, constant: -topStackViewPadding.right)
@@ -430,6 +505,12 @@ open class MessageInputBar: UIView {
         contentViewLayoutSet?.left?.constant = padding.left
         contentViewLayoutSet?.right?.constant = -padding.right
         contentViewLayoutSet?.bottom?.constant = -padding.bottom
+        
+        replyForwardViewLayoutSet?.top?.constant = padding.top
+        replyForwardViewLayoutSet?.left?.constant = padding.left
+        replyForwardViewLayoutSet?.right?.constant = -padding.right
+        replyForwardViewLayoutSet?.bottom?.constant = -padding.bottom
+        
         windowAnchor?.constant = -padding.bottom
     }
     
@@ -548,6 +629,7 @@ open class MessageInputBar: UIView {
     /// Activates the NSLayoutConstraintSet's
     private func activateConstraints() {
         contentViewLayoutSet?.activate()
+//        replyForwardViewLayoutSet?.activate()
         textViewLayoutSet?.activate()
         leftStackViewLayoutSet?.activate()
         rightStackViewLayoutSet?.activate()
@@ -558,6 +640,7 @@ open class MessageInputBar: UIView {
     /// Deactivates the NSLayoutConstraintSet's
     private func deactivateConstraints() {
         contentViewLayoutSet?.deactivate()
+        replyForwardViewLayoutSet?.deactivate()
         textViewLayoutSet?.deactivate()
         leftStackViewLayoutSet?.deactivate()
         rightStackViewLayoutSet?.deactivate()

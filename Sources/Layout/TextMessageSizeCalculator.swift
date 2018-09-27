@@ -64,8 +64,8 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
         let messageInsets = messageLabelInsets(for: message)
         messageContainerSize.width += messageInsets.horizontal
         messageContainerSize.height += messageInsets.vertical
-        if messageContainerSize.width < 114.0 && isText {
-            messageContainerSize.width = 114.0
+        if messageContainerSize.width < 120.0 && isText {
+            messageContainerSize.width = 120.0
         }
         return messageContainerSize
     }

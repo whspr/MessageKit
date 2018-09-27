@@ -30,6 +30,9 @@ open class MessageContainerView: UIImageView {
 
     private let imageMask = UIImageView()
 
+    
+    open var isBubble: Bool = false
+    
     open var style: MessageStyle = .none {
         didSet {
             applyMessageStyle()
@@ -41,6 +44,8 @@ open class MessageContainerView: UIImageView {
             sizeMaskToView()
         }
     }
+    
+    open var isSelected: Bool = false
 
     // MARK: - Methods
 
@@ -51,6 +56,26 @@ open class MessageContainerView: UIImageView {
         case .bubble, .bubbleTail, .bubbleOutline, .bubbleTailOutline:
             imageMask.frame = bounds
         }
+        switch style {
+        case .bubble:
+            self.isBubble = true
+        default:
+            self.isBubble = false
+        }
+        if frame.minX < 32 {
+            if self.isBubble {
+                superview?.layer.addShadowBubble(.left(CGRect(x: frame.minX + 8, y: frame.minY, width: frame.width - 8, height: frame.height)))
+            } else {
+                superview?.layer.addShadowTail(.left(CGRect(x: frame.minX + 8, y: frame.minY, width: frame.width - 8, height: frame.height)))
+            }
+        } else {
+            if self.isBubble {
+                superview?.layer.addShadowBubble(.right(CGRect(x: frame.minX, y: frame.minY, width: frame.width - 8, height: frame.height + 1)))
+            } else {
+                superview?.layer.addShadowTail(.right(CGRect(x: frame.minX, y: frame.minY, width: frame.width - 8, height: frame.height + 1)))
+            }
+        }
+        
     }
 
     private func applyMessageStyle() {
@@ -86,5 +111,101 @@ open class MessageContainerView: UIImageView {
             tintColor = nil
             configurationClosure(self)
         }
+    }
+}
+
+
+fileprivate extension CALayer {
+    
+    enum ShadowDirection {
+        case left(CGRect)
+        case right(CGRect)
+    }
+    //
+    //    1 _______ 8
+    //   2 /       \ 7
+    //     |       |
+    //   3 |       | 6
+    //  4 /________/ 5
+    //
+    
+    func addShadowTail(_ direction: ShadowDirection) {
+        var path: CGMutablePath
+        self.masksToBounds = true
+        self.shadowOffset = .zero
+        self.shadowOpacity = 0.2
+        self.shadowRadius = 0.2
+        self.shadowColor = UIColor.black.cgColor
+        switch direction {
+        case .left(let rect):
+            path = CGMutablePath()
+            let points: [CGPoint] = [
+                CGPoint(x: rect.minX + 6, y: rect.minY),//1
+                CGPoint(x: rect.minX, y: rect.minY + 6),//2
+                CGPoint(x: rect.minX, y: rect.maxY - 8),//3
+                CGPoint(x: rect.minX - 8, y: rect.maxY + 0.5),//4
+                CGPoint(x: rect.maxX - 6, y: rect.maxY + 0.5),//5
+                CGPoint(x: rect.maxX, y: rect.maxY - 6),//6
+                CGPoint(x: rect.maxX, y: rect.minY + 6),//7
+                CGPoint(x: rect.maxX - 6, y: rect.minY)//8
+            ]
+            path.addLines(between: points)
+            path.closeSubpath()
+        case .right(let rect):
+            path = CGMutablePath()
+            let points: [CGPoint] = [
+                CGPoint(x: rect.minX + 6, y: rect.minY),//1
+                CGPoint(x: rect.minX, y: rect.minY + 6),//2
+                CGPoint(x: rect.minX, y: rect.maxY - 6), //3
+                CGPoint(x: rect.minX + 6, y: rect.maxY - 0.5), //4
+                CGPoint(x: rect.maxX + 9, y: rect.maxY - 0.5),//5
+                CGPoint(x: rect.maxX, y: rect.maxY - 9),//6
+                CGPoint(x: rect.maxX, y: rect.minY + 6),//7
+                CGPoint(x: rect.maxX - 6, y: rect.minY)//8
+            ]
+            path.addLines(between: points)
+            path.closeSubpath()
+        }
+        self.shadowPath = path
+    }
+    
+    func addShadowBubble(_ direction: ShadowDirection) {
+        var path: CGMutablePath
+        self.masksToBounds = true
+        self.shadowOffset = .zero
+        self.shadowOpacity = 0.2
+        self.shadowRadius = 0.2
+        self.shadowColor = UIColor.black.cgColor
+        switch direction {
+        case .left(let rect):
+            path = CGMutablePath()
+            let points: [CGPoint] = [
+                CGPoint(x: rect.minX + 6, y: rect.minY),//1
+                CGPoint(x: rect.minX, y: rect.minY + 6),//2
+                CGPoint(x: rect.minX, y: rect.maxY - 6),//3
+                CGPoint(x: rect.minX + 6, y: rect.maxY + 0.5),//4
+                CGPoint(x: rect.maxX - 6, y: rect.maxY + 0.5),//5
+                CGPoint(x: rect.maxX, y: rect.maxY - 6),//6
+                CGPoint(x: rect.maxX, y: rect.minY + 6),//7
+                CGPoint(x: rect.maxX - 6, y: rect.minY)//8
+            ]
+            path.addLines(between: points)
+            path.closeSubpath()
+        case .right(let rect):
+            path = CGMutablePath()
+            let points: [CGPoint] = [
+                CGPoint(x: rect.minX + 6, y: rect.minY),//1
+                CGPoint(x: rect.minX, y: rect.minY + 6),//2
+                CGPoint(x: rect.minX, y: rect.maxY - 6), //3
+                CGPoint(x: rect.minX + 6, y: rect.maxY - 0.5), //4
+                CGPoint(x: rect.maxX - 6, y: rect.maxY - 0.5),//5
+                CGPoint(x: rect.maxX, y: rect.maxY - 6),//6
+                CGPoint(x: rect.maxX, y: rect.minY + 6),//7
+                CGPoint(x: rect.maxX - 6, y: rect.minY)//8
+            ]
+            path.addLines(between: points)
+            path.closeSubpath()
+        }
+        self.shadowPath = path
     }
 }

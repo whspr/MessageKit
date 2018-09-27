@@ -59,6 +59,12 @@ open class MessageContentCell: MessageCollectionViewCell {
         label.numberOfLines = 0
         return label
     }()
+    
+    open var messageDeliveryIndicator: UIImageView = {
+        let view = UIImageView()
+//        view.isHidden = true
+        return view
+    }()
 
     /// The `MessageCellDelegate` for the cell.
     open weak var delegate: MessageCellDelegate?
@@ -78,6 +84,7 @@ open class MessageContentCell: MessageCollectionViewCell {
         contentView.addSubview(messageTopLabel)
         contentView.addSubview(messageBottomLabel)
         contentView.addSubview(messageContainerView)
+        contentView.addSubview(messageDeliveryIndicator)
 //        contentView.addSubview(avatarView)
     }
 
@@ -87,6 +94,8 @@ open class MessageContentCell: MessageCollectionViewCell {
         messageTopLabel.text = nil
         messageBottomLabel.text = nil
     }
+    
+    var bubble: Bool = false
 
     // MARK: - Configuration
 
@@ -98,6 +107,7 @@ open class MessageContentCell: MessageCollectionViewCell {
         layoutBottomLabel(with: attributes)
         layoutCellTopLabel(with: attributes)
         layoutMessageTopLabel(with: attributes)
+        layoutDeliveryIndicator(with: attributes)
 //        layoutAvatarView(with: attributes)
     }
 
@@ -119,12 +129,16 @@ open class MessageContentCell: MessageCollectionViewCell {
 
         let messageColor = displayDelegate.backgroundColor(for: message, at: indexPath, in: messagesCollectionView)
         let messageStyle = displayDelegate.messageStyle(for: message, at: indexPath, in: messagesCollectionView)
-
+        let isSelected = displayDelegate.isSelected(for: message, at: indexPath, in: messagesCollectionView)
+        let deliveryIndicator = displayDelegate.deliveryIndicatorImage(for: message, at: indexPath, in: messagesCollectionView)
+        self.bubble = messageStyle.isBubble()
 //        displayDelegate.configureAvatarView(avatarView, for: message, at: indexPath, in: messagesCollectionView)
 
         messageContainerView.backgroundColor = messageColor
         messageContainerView.style = messageStyle
-
+        messageContainerView.isSelected = isSelected
+        messageDeliveryIndicator.image = deliveryIndicator
+        
         let topCellLabelText = dataSource.cellTopLabelAttributedText(for: message, at: indexPath)
         let topMessageLabelText = dataSource.messageTopLabelAttributedText(for: message, at: indexPath)
         let bottomText = dataSource.messageBottomLabelAttributedText(for: message, at: indexPath)
@@ -134,29 +148,79 @@ open class MessageContentCell: MessageCollectionViewCell {
         messageBottomLabel.attributedText = bottomText
         messageBottomLabel.superview?.bringSubviewToFront(messageBottomLabel)
         
+        if messageContainerView.isSelected {
+            self.contentView.backgroundColor = UIColor.blue.withAlphaComponent(0.2)
+        } else {
+            self.contentView.backgroundColor = .clear
+        }
+        
         
     }
 
     /// Handle tap gesture on contentView and its subviews.
     open func handleTapGesture(_ gesture: UIGestureRecognizer) {
         let touchLocation = gesture.location(in: self)
-
+        var isTapHandled: Bool = false
         switch true {
         case messageContainerView.frame.contains(touchLocation) && !cellContentView(canHandle: convert(touchLocation, to: messageContainerView)):
             delegate?.didTapMessage(in: self)
+            isTapHandled = true
 //        case avatarView.frame.contains(touchLocation):
 //            delegate?.didTapAvatar(in: self)
         case cellTopLabel.frame.contains(touchLocation):
             delegate?.didTapCellTopLabel(in: self)
+            isTapHandled = true
         case messageTopLabel.frame.contains(touchLocation):
             delegate?.didTapMessageTopLabel(in: self)
+            isTapHandled = true
         case messageBottomLabel.frame.contains(touchLocation):
             delegate?.didTapMessageBottomLabel(in: self)
+            isTapHandled = true
         default:
             break
         }
+        if self.contentView.frame.contains(touchLocation) && !isTapHandled {
+            delegate?.didTap(in: self)
+        }
+    }
+    
+    open func handleLongTapGesture(_ gesture: UIGestureRecognizer) {
+        let touchLocation = gesture.location(in: self)
+        var isTapHandled: Bool = false
+        switch true {
+        case messageContainerView.frame.contains(touchLocation) && !cellContentView(canHandle: convert(touchLocation, to: messageContainerView)):
+            delegate?.didLongTapMessage(in: self)
+            isTapHandled = true
+        case cellTopLabel.frame.contains(touchLocation):
+            delegate?.didLongTapCellTopLabel(in: self)
+            isTapHandled = true
+        case messageTopLabel.frame.contains(touchLocation):
+            delegate?.didLongTapMessageTopLabel(in: self)
+            isTapHandled = true
+        case messageBottomLabel.frame.contains(touchLocation):
+            delegate?.didLongTapMessageBottomLabel(in: self)
+            isTapHandled = true
+        default:
+            break
+        }
+        if self.contentView.frame.contains(touchLocation) && !isTapHandled {
+            delegate?.didLongTap(in: self)
+        }
     }
 
+    open func setSelected(_ color: UIColor) {
+        messageContainerView.isSelected = !messageContainerView.isSelected
+        if messageContainerView.isSelected {
+            self.contentView.backgroundColor = color
+        } else {
+            self.contentView.backgroundColor = .clear
+        }
+    }
+    
+    open func isSelected() -> Bool {
+        return messageContainerView.isSelected
+    }
+    
     /// Handle long press gesture, return true when gestureRecognizer's touch point in `messageContainerView`'s frame
     open override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         let touchPoint = gestureRecognizer.location(in: self)
@@ -171,6 +235,24 @@ open class MessageContentCell: MessageCollectionViewCell {
 
     // MARK: - Origin Calculations
 
+    open func layoutDeliveryIndicator(with attributes: MessagesCollectionViewLayoutAttributes) {
+        let deliveryMarkerSize: CGFloat = 16
+        switch attributes.avatarPosition.horizontal {
+        case .cellLeading:
+            self.messageDeliveryIndicator.isHidden = true
+            break
+        case .cellTrailing:
+            self.messageDeliveryIndicator.tintColor = UIColor(red:0.22, green:0.56, blue:0.24, alpha:1)
+            self.messageDeliveryIndicator.isHidden = false
+            var origin: CGPoint = .zero
+            origin.y = self.messageBottomLabel.frame.maxY - deliveryMarkerSize
+            origin.x = self.messageBottomLabel.frame.maxX - deliveryMarkerSize - 18
+            self.messageDeliveryIndicator.frame = CGRect(origin: origin, size: CGSize(width: deliveryMarkerSize, height: deliveryMarkerSize))
+        case .natural:
+            fatalError(MessageKitError.avatarPositionUnresolved)
+        }
+        
+    }
     /// Positions the cell's `AvatarView`.
     /// - attributes: The `MessagesCollectionViewLayoutAttributes` for the cell.
     open func layoutAvatarView(with attributes: MessagesCollectionViewLayoutAttributes) {
@@ -207,7 +289,6 @@ open class MessageContentCell: MessageCollectionViewCell {
     /// - attributes: The `MessagesCollectionViewLayoutAttributes` for the cell.
     open func layoutMessageContainerView(with attributes: MessagesCollectionViewLayoutAttributes) {
         var origin: CGPoint = .zero
-
         switch attributes.avatarPosition.vertical {
         case .messageBottom:
             origin.y = attributes.size.height - attributes.messageContainerPadding.bottom - attributes.messageBottomLabelSize.height - attributes.messageContainerSize.height - attributes.messageContainerPadding.top
@@ -230,8 +311,8 @@ open class MessageContentCell: MessageCollectionViewCell {
         case .natural:
             fatalError(MessageKitError.avatarPositionUnresolved)
         }
-
         messageContainerView.frame = CGRect(origin: origin, size: attributes.messageContainerSize)
+        
     }
 
     /// Positions the cell's top label.
@@ -271,24 +352,6 @@ open class MessageContentCell: MessageCollectionViewCell {
         let y = messageContainerView.frame.maxY - 16
         let origin = CGPoint(x: 0, y: y)
         messageBottomLabel.frame = CGRect(origin: origin, size: attributes.messageBottomLabelSize)
-        
-        let rect = messageContainerView.frame
-        if rect.minX < frame.width / 2 {
-            layer.addShadow(CGRect(x: rect.minX + 6, y: rect.minY, width: rect.width - 6, height: rect.height))
-        } else {
-            layer.addShadow(CGRect(x: rect.minX, y: rect.minY, width: rect.width - 6, height: rect.height + 1))
-        }
     }
     
-}
-
-fileprivate extension CALayer {
-    func addShadow(_ rect: CGRect) {
-        self.masksToBounds = true
-        self.shadowOffset = .zero
-        self.shadowOpacity = 0.1
-        self.shadowRadius = 4
-        self.shadowColor = UIColor.black.cgColor
-        self.shadowPath = CGPath(roundedRect: rect, cornerWidth: 4, cornerHeight: 4, transform: nil)
-    }
 }

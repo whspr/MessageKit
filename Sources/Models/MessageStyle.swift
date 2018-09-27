@@ -73,6 +73,15 @@ public enum MessageStyle {
 
     // MARK: - Public
 
+    public func isBubble() -> Bool {
+        switch self {
+        case .none, .custom, .bubbleTail(_, _), .bubbleTailOutline(_, _, _):
+            return false
+        case  .bubbleOutline, .bubble(_):
+            return true
+        }
+    }
+    
     public var image: UIImage? {
         
         guard let imageCacheKey = imageCacheKey, let path = imagePath else { return nil }
