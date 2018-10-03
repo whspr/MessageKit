@@ -60,6 +60,9 @@ open class MessageSizeCalculator: CellSizeCalculator {
         let indexPath = attributes.indexPath
         let message = dataSource.messageForItem(at: indexPath, in: messagesLayout.messagesCollectionView)
 
+        attributes.messageIsForwarded = dataSource.isForwarded(at: indexPath)
+        attributes.messageForwardedIncome = dataSource.isForwardedIncome(at: indexPath)
+        
         attributes.avatarSize = avatarSize(for: message)
         attributes.avatarPosition = avatarPosition(for: message)
 

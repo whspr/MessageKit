@@ -32,6 +32,8 @@ open class MessageContainerView: UIImageView {
 
     
     open var isBubble: Bool = false
+    open var isForwarded: Bool = false
+    open var ForwardIncome: Bool = false
     
     open var style: MessageStyle = .none {
         didSet {
@@ -49,6 +51,8 @@ open class MessageContainerView: UIImageView {
 
     // MARK: - Methods
 
+    
+    
     private func sizeMaskToView() {
         switch style {
         case .none, .custom:
@@ -62,20 +66,35 @@ open class MessageContainerView: UIImageView {
         default:
             self.isBubble = false
         }
-        if frame.minX < 32 {
-            if self.isBubble {
-                superview?.layer.addShadowBubble(.left(CGRect(x: frame.minX + 8, y: frame.minY, width: frame.width - 8, height: frame.height)))
+        if self.isForwarded {
+            if frame.minX < (ForwardIncome ? 16 : 42 ) {
+                if self.isBubble {
+                    superview?.layer.addShadowBubble(.left(CGRect(x: frame.minX + 8, y: frame.minY, width: frame.width - 8, height: frame.height)))
+                } else {
+                    superview?.layer.addShadowTail(.left(CGRect(x: frame.minX + 8, y: frame.minY, width: frame.width - 8, height: frame.height)))
+                }
             } else {
-                superview?.layer.addShadowTail(.left(CGRect(x: frame.minX + 8, y: frame.minY, width: frame.width - 8, height: frame.height)))
+                if self.isBubble {
+                    superview?.layer.addShadowBubble(.right(CGRect(x: frame.minX, y: frame.minY, width: frame.width - 8, height: frame.height + 1)))
+                } else {
+                    superview?.layer.addShadowTail(.right(CGRect(x: frame.minX, y: frame.minY, width: frame.width - 8, height: frame.height + 1)))
+                }
             }
         } else {
-            if self.isBubble {
-                superview?.layer.addShadowBubble(.right(CGRect(x: frame.minX, y: frame.minY, width: frame.width - 8, height: frame.height + 1)))
+            if frame.minX < 48 {
+                if self.isBubble {
+                    superview?.layer.addShadowBubble(.left(CGRect(x: frame.minX + 8, y: frame.minY, width: frame.width - 8, height: frame.height)))
+                } else {
+                    superview?.layer.addShadowTail(.left(CGRect(x: frame.minX + 8, y: frame.minY, width: frame.width - 8, height: frame.height)))
+                }
             } else {
-                superview?.layer.addShadowTail(.right(CGRect(x: frame.minX, y: frame.minY, width: frame.width - 8, height: frame.height + 1)))
+                if self.isBubble {
+                    superview?.layer.addShadowBubble(.right(CGRect(x: frame.minX, y: frame.minY, width: frame.width - 8, height: frame.height + 1)))
+                } else {
+                    superview?.layer.addShadowTail(.right(CGRect(x: frame.minX, y: frame.minY, width: frame.width - 8, height: frame.height + 1)))
+                }
             }
         }
-        
     }
 
     private func applyMessageStyle() {

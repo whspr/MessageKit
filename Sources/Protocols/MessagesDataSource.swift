@@ -41,6 +41,10 @@ public protocol MessagesDataSource: AnyObject {
     ///   the message's `Sender` and the current `Sender`.
     func isFromCurrentSender(message: MessageType) -> Bool
 
+    func isForwarded(at indexPath: IndexPath) -> Bool
+    func isForwardedIncome(at indexPath: IndexPath) -> Bool
+    
+    
     /// The message to be used for a `MessageCollectionViewCell` at the given `IndexPath`.
     ///
     /// - Parameters:
@@ -97,6 +101,14 @@ public protocol MessagesDataSource: AnyObject {
 
 public extension MessagesDataSource {
 
+    func isForwarded(at indexPath: IndexPath) -> Bool {
+        return false
+    }
+    
+    func isForwardedIncome(at indexPath: IndexPath) -> Bool {
+        return false
+    }
+    
     func isFromCurrentSender(message: MessageType) -> Bool {
         return message.sender == currentSender()
     }

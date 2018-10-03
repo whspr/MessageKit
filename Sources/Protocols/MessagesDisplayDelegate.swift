@@ -57,7 +57,14 @@ public protocol MessagesDisplayDelegate: AnyObject {
     ///   All other senders: Gray
     func backgroundColor(for message: MessageType, at  indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> UIColor
 
+    
+    // TODO: Write some comments about this protocol methods
     func isSelected(for message: MessageType, at  indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> Bool
+    
+    func isForwarded(for message: MessageType, at  indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> (Bool, Bool)
+    
+    // if nil, hide forwarded indicator
+    func forwardedFillColor(for message: MessageType, at  indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> UIColor?
     
     func deliveryIndicatorImage(for message: MessageType, at  indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> UIImage?
     
@@ -175,8 +182,16 @@ public extension MessagesDisplayDelegate {
         return .bubble(.bottomRight)
     }
 
-    func isSelected(for message: MessageType, at  indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> Bool{
+    func isSelected(for message: MessageType, at  indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> Bool {
         return false
+    }
+    
+    func isForwarded(for message: MessageType, at  indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> (Bool, Bool) {
+        return (false, false)
+    }
+    
+    func forwardedFillColor(for message: MessageType, at  indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> UIColor? {
+        return nil
     }
     
     func deliveryIndicatorImage(for message: MessageType, at  indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> UIImage? {

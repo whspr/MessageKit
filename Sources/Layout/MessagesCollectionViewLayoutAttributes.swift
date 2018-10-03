@@ -45,6 +45,9 @@ open class MessagesCollectionViewLayoutAttributes: UICollectionViewLayoutAttribu
 
     public var messageBottomLabelAlignment = LabelAlignment(textAlignment: .center, textInsets: .zero)
     public var messageBottomLabelSize: CGSize = .zero
+    
+    public var messageIsForwarded: Bool = false
+    public var messageForwardedIncome: Bool = false
 
     // MARK: - Methods
 
@@ -63,6 +66,8 @@ open class MessagesCollectionViewLayoutAttributes: UICollectionViewLayoutAttribu
         copy.messageTopLabelSize = messageTopLabelSize
         copy.messageBottomLabelAlignment = messageBottomLabelAlignment
         copy.messageBottomLabelSize = messageBottomLabelSize
+        copy.messageIsForwarded = messageIsForwarded
+        copy.messageForwardedIncome = messageForwardedIncome
         return copy
         // swiftlint:enable force_cast
     }
@@ -82,6 +87,8 @@ open class MessagesCollectionViewLayoutAttributes: UICollectionViewLayoutAttribu
                 && attributes.messageTopLabelSize == messageTopLabelSize
                 && attributes.messageBottomLabelAlignment == messageBottomLabelAlignment
                 && attributes.messageBottomLabelSize == messageBottomLabelSize
+                && attributes.messageIsForwarded == messageIsForwarded
+                && attributes.messageForwardedIncome == messageForwardedIncome
         } else {
             return false
         }
