@@ -45,7 +45,6 @@ open class TextMessageSizeCalculator: MessageSizeCalculator {
 
     open override func messageContainerSize(for message: MessageType) -> CGSize {
         let maxWidth = messageContainerMaxWidth(for: message)
-
         var messageContainerSize: CGSize
         let attributedText: NSAttributedString
         var isText: Bool = false

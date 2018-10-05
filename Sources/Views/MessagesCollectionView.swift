@@ -76,6 +76,8 @@ open class MessagesCollectionView: UICollectionView {
         
         let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPressGesture(_:)))
         longPressGesture.delaysTouchesBegan = true
+//        longPressGesture
+//        longPressGesture.minimumPressDuration
         addGestureRecognizer(longPressGesture)
     }
     
@@ -93,7 +95,6 @@ open class MessagesCollectionView: UICollectionView {
     @objc
     open func handleLongPressGesture(_ gesture: UIGestureRecognizer) {
         guard gesture.state == .ended else { return }
-        
         let touchLocation = gesture.location(in: self)
         guard let indexPath = indexPathForItem(at: touchLocation) else { return }
         

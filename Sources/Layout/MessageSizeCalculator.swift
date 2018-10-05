@@ -62,6 +62,7 @@ open class MessageSizeCalculator: CellSizeCalculator {
 
         attributes.messageIsForwarded = dataSource.isForwarded(at: indexPath)
         attributes.messageForwardedIncome = dataSource.isForwardedIncome(at: indexPath)
+        attributes.messageForwardOffset = dataSource.forwardOffset(at: indexPath)
         
         attributes.avatarSize = avatarSize(for: message)
         attributes.avatarPosition = avatarPosition(for: message)

@@ -63,6 +63,7 @@ public protocol MessagesDisplayDelegate: AnyObject {
     
     func isForwarded(for message: MessageType, at  indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> (Bool, Bool)
     
+    
     // if nil, hide forwarded indicator
     func forwardedFillColor(for message: MessageType, at  indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> UIColor?
     

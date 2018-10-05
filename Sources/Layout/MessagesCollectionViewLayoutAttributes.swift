@@ -48,6 +48,7 @@ open class MessagesCollectionViewLayoutAttributes: UICollectionViewLayoutAttribu
     
     public var messageIsForwarded: Bool = false
     public var messageForwardedIncome: Bool = false
+    public var messageForwardOffset: CGSize = .zero
 
     // MARK: - Methods
 
@@ -68,6 +69,7 @@ open class MessagesCollectionViewLayoutAttributes: UICollectionViewLayoutAttribu
         copy.messageBottomLabelSize = messageBottomLabelSize
         copy.messageIsForwarded = messageIsForwarded
         copy.messageForwardedIncome = messageForwardedIncome
+        copy.messageForwardOffset = messageForwardOffset
         return copy
         // swiftlint:enable force_cast
     }
@@ -89,6 +91,7 @@ open class MessagesCollectionViewLayoutAttributes: UICollectionViewLayoutAttribu
                 && attributes.messageBottomLabelSize == messageBottomLabelSize
                 && attributes.messageIsForwarded == messageIsForwarded
                 && attributes.messageForwardedIncome == messageForwardedIncome
+                && attributes.messageForwardOffset == messageForwardOffset
         } else {
             return false
         }

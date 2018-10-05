@@ -41,9 +41,12 @@ public protocol MessagesDataSource: AnyObject {
     ///   the message's `Sender` and the current `Sender`.
     func isFromCurrentSender(message: MessageType) -> Bool
 
+    
     func isForwarded(at indexPath: IndexPath) -> Bool
     func isForwardedIncome(at indexPath: IndexPath) -> Bool
     
+    
+    func forwardOffset(at indexPath: IndexPath) -> CGSize
     
     /// The message to be used for a `MessageCollectionViewCell` at the given `IndexPath`.
     ///
@@ -107,6 +110,11 @@ public extension MessagesDataSource {
     
     func isForwardedIncome(at indexPath: IndexPath) -> Bool {
         return false
+    }
+    
+    
+    func forwardOffset(at indexPath: IndexPath) -> CGSize {
+        return .zero
     }
     
     func isFromCurrentSender(message: MessageType) -> Bool {

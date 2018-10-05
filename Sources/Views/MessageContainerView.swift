@@ -34,6 +34,7 @@ open class MessageContainerView: UIImageView {
     open var isBubble: Bool = false
     open var isForwarded: Bool = false
     open var ForwardIncome: Bool = false
+    open var forwardedOffset: CGFloat = 0
     
     open var style: MessageStyle = .none {
         didSet {
@@ -67,7 +68,7 @@ open class MessageContainerView: UIImageView {
             self.isBubble = false
         }
         if self.isForwarded {
-            if frame.minX < (ForwardIncome ? 16 : 42 ) {
+            if backgroundColor != .white {
                 if self.isBubble {
                     superview?.layer.addShadowBubble(.left(CGRect(x: frame.minX + 8, y: frame.minY, width: frame.width - 8, height: frame.height)))
                 } else {
@@ -81,7 +82,7 @@ open class MessageContainerView: UIImageView {
                 }
             }
         } else {
-            if frame.minX < 48 {
+            if backgroundColor != .white {
                 if self.isBubble {
                     superview?.layer.addShadowBubble(.left(CGRect(x: frame.minX + 8, y: frame.minY, width: frame.width - 8, height: frame.height)))
                 } else {

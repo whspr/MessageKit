@@ -26,11 +26,11 @@ import Foundation
 
 extension UIEdgeInsets {
 
-    internal var vertical: CGFloat {
+    public var vertical: CGFloat {
         return top + bottom
     }
 
-    internal var horizontal: CGFloat {
+    public var horizontal: CGFloat {
         return left + right
     }
 
