@@ -93,6 +93,8 @@ public protocol MessageCellDelegate: MessageLabelDelegate {
     
     func didLongTapMessageBottomLabel(in cell: MessageCollectionViewCell)
     
+    func didTapImage(cell: MessageCollectionViewCell, at imageId: Int)
+    
 }
 
 public extension MessageCellDelegate {
@@ -120,4 +122,6 @@ public extension MessageCellDelegate {
     func didLongTapMessageTopLabel(in cell: MessageCollectionViewCell) {}
     
     func didLongTapMessageBottomLabel(in cell: MessageCollectionViewCell) {}
+    
+    func didTapImage(cell: MessageCollectionViewCell, at imageId: Int) {}
 }

@@ -19,4 +19,5 @@ Pod::Spec.new do |s|
    s.ios.resource_bundle = { 'MessageKitAssets' => 'Assets/MessageKitAssets.bundle/Images' }
 
    s.requires_arc = true
+   s.dependency 'Nuke'
 end

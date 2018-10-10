@@ -79,7 +79,6 @@ open class MessageContentCell: MessageCollectionViewCell {
     open var forwardIncome: Bool = false
     open var forwardFillColor: UIColor? = nil
     
-    
     /// The `MessageCellDelegate` for the cell.
     open weak var delegate: MessageCellDelegate?
 
@@ -146,6 +145,7 @@ open class MessageContentCell: MessageCollectionViewCell {
         let isSelected = displayDelegate.isSelected(for: message, at: indexPath, in: messagesCollectionView)
         let (isForwarded, forwardIncome) = displayDelegate.isForwarded(for: message, at: indexPath, in: messagesCollectionView)
         let forwardFillColor = displayDelegate.forwardedFillColor(for: message, at: indexPath, in: messagesCollectionView)
+        let forwardBckgColor = displayDelegate.forwardedBackgroundColor(for: message, at: indexPath, in: messagesCollectionView)
         let deliveryIndicator = displayDelegate.deliveryIndicatorImage(for: message, at: indexPath, in: messagesCollectionView)
         let offsetRect = dataSource.forwardOffset(at: indexPath)
         let offset = offsetRect.width
@@ -170,8 +170,9 @@ open class MessageContentCell: MessageCollectionViewCell {
         messageTopLabel.attributedText = topMessageLabelText
         messageBottomLabel.attributedText = bottomText
         messageBottomLabel.superview?.bringSubviewToFront(messageBottomLabel)
+        messageTopLabel.superview?.bringSubviewToFront(messageTopLabel)
         
-        drawForwardIndicator(from: offset)
+        drawForwardIndicator(from: offsetRect, fillWith: forwardBckgColor)
         
         if messageContainerView.isSelected {
             self.contentView.backgroundColor = UIColor.blue.withAlphaComponent(0.2)
@@ -181,21 +182,23 @@ open class MessageContentCell: MessageCollectionViewCell {
         
     }
     
-    private func drawForwardIndicator(from offset: CGFloat) {
+    private func drawForwardIndicator(from offset: CGSize, fillWith color: UIColor) {
         
         if !isForwarded {
             self.forwardIndicator.isHidden = true
+            self.forwardbackground.isHidden = true
             return
         }
         
-        let rect = CGRect(x: offset, y: 0, width: 4, height: frame.height)
+        let rect = CGRect(x: offset.width + 2, y: 0, width: 3, height: frame.height)
         self.forwardIndicator.frame = rect
         self.forwardIndicator.backgroundColor = self.forwardFillColor
         self.forwardIndicator.isHidden = !self.isForwarded
         self.addSubview(forwardIndicator)
         
-        self.forwardbackground.frame = CGRect(offset, 0, frame.width - offset, frame.height)
-        self.forwardbackground.backgroundColor = UIColor.blue.withAlphaComponent(0.05)
+        self.forwardbackground.frame = CGRect(offset.width + 2, 0, offset.height == 0 ? frame.width - offset.width - 2: offset.height - 6
+            , frame.height)
+        self.forwardbackground.backgroundColor = color
         self.forwardbackground.isHidden = !self.isForwarded
         self.addSubview(forwardbackground)
         self.sendSubviewToBack(forwardbackground)
@@ -212,9 +215,9 @@ open class MessageContentCell: MessageCollectionViewCell {
             isTapHandled = true
 //        case avatarView.frame.contains(touchLocation):
 //            delegate?.didTapAvatar(in: self)
-        case cellTopLabel.frame.contains(touchLocation):
-            delegate?.didTapCellTopLabel(in: self)
-            isTapHandled = true
+//        case cellTopLabel.frame.contains(touchLocation):
+//            delegate?.didTapCellTopLabel(in: self)
+//            isTapHandled = true
         case messageTopLabel.frame.contains(touchLocation):
             delegate?.didTapMessageTopLabel(in: self)
             isTapHandled = true
@@ -358,21 +361,13 @@ open class MessageContentCell: MessageCollectionViewCell {
         switch attributes.avatarPosition.horizontal {
         case .cellLeading:
             if attributes.messageIsForwarded {
-                if attributes.messageForwardedIncome {
-                    origin.x = attributes.avatarSize.width + attributes.messageContainerPadding.left + 8
-                } else {
-                    origin.x = attributes.avatarSize.width + attributes.messageContainerPadding.left + offset.width + 4
-                }
+                origin.x = offset.width
             } else {
                 origin.x = attributes.avatarSize.width + attributes.messageContainerPadding.left
             }
         case .cellTrailing:
             if attributes.messageIsForwarded {
-                if attributes.messageForwardedIncome {
-                    origin.x = attributes.frame.width - attributes.avatarSize.width - attributes.messageContainerSize.width - attributes.messageContainerPadding.right - offset.height
-                } else {
-                    origin.x = attributes.frame.width - attributes.avatarSize.width - attributes.messageContainerSize.width - attributes.messageContainerPadding.right - 20
-                }
+                origin.x = offset.width + CGFloat(8)
             } else {
                 origin.x = attributes.frame.width - attributes.avatarSize.width - attributes.messageContainerSize.width - attributes.messageContainerPadding.right
             }
@@ -392,13 +387,14 @@ open class MessageContentCell: MessageCollectionViewCell {
     /// Positions the message bubble's top label.
     /// - attributes: The `MessagesCollectionViewLayoutAttributes` for the cell.
     open func layoutMessageTopLabel(with attributes: MessagesCollectionViewLayoutAttributes) {
-        messageTopLabel.textAlignment = attributes.messageTopLabelAlignment.textAlignment
-        messageTopLabel.textInsets = attributes.messageTopLabelAlignment.textInsets
-
-        let y = messageContainerView.frame.minY - attributes.messageContainerPadding.top - attributes.messageTopLabelSize.height
+        messageTopLabel.textAlignment = .left
+        messageTopLabel.textInsets = UIEdgeInsets(left: attributes.messageForwardOffset.width + 16)
+        
+        let y = messageContainerView.frame.minY// - attributes.messageContainerPadding.top - attributes.messageTopLabelSize.height
         let origin = CGPoint(x: 0, y: y)
         
-        messageTopLabel.frame = CGRect(origin: origin, size: attributes.messageTopLabelSize)
+        messageTopLabel.frame = CGRect(origin: origin, size: CGSize(width: attributes.frame.width, height: 16))
+//        messageTopLabel.frame = CGRect(origin: origin, size: attributes.messageTopLabelSize)
     }
 
     /// Positions the cell's bottom label.
@@ -414,21 +410,23 @@ open class MessageContentCell: MessageCollectionViewCell {
             messageBottomLabel.textAlignment = .right
             // calc right offset for label + padding from right message edge
             if attributes.messageIsForwarded {
-                if attributes.messageForwardedIncome {
-                    messageBottomLabel.textInsets = UIEdgeInsets(right: attributes.frame.width - attributes.messageContainerSize.width + 8)
-                } else {
-                    messageBottomLabel.textInsets = UIEdgeInsets(right: attributes.frame.width - attributes.messageForwardOffset.width - attributes.messageContainerSize.width)
-                }
+//                if attributes.messageForwardedIncome {
+//                    messageBottomLabel.textInsets = UIEdgeInsets(right: attributes.frame.width - attributes.messageContainerSize.width + 8)
+//                } else {
+//                    messageBottomLabel.textInsets = UIEdgeInsets(right: attributes.frame.width - attributes.messageForwardOffset.width - attributes.messageContainerSize.width)
+//                }
+                messageBottomLabel.textInsets = UIEdgeInsets(right: attributes.frame.width - attributes.messageForwardOffset.width - attributes.messageContainerSize.width + 8)
             } else {
                 messageBottomLabel.textInsets = UIEdgeInsets(right: attributes.frame.width - attributes.messageContainerSize.width + 8)
             }
         } else {
             if attributes.messageIsForwarded {
-                if attributes.messageForwardedIncome {
-                    messageBottomLabel.textInsets = UIEdgeInsets(right: attributes.messageForwardOffset.height + 24)
-                } else {
-                    messageBottomLabel.textInsets = UIEdgeInsets(right: 42)
-                }
+//                if attributes.messageForwardedIncome {
+//                    messageBottomLabel.textInsets = UIEdgeInsets(right: attributes.messageForwardOffset.height + 24)
+//                } else {
+//                    messageBottomLabel.textInsets = UIEdgeInsets(right: 42)
+//                }
+                messageBottomLabel.textInsets = UIEdgeInsets(right: attributes.frame.width - attributes.messageForwardOffset.width - attributes.messageContainerSize.width + 8)
             }
         }
 

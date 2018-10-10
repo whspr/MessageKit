@@ -26,8 +26,8 @@ import Foundation
 
 open class TextMessageSizeCalculator: MessageSizeCalculator {
 
-    public var incomingMessageLabelInsets = UIEdgeInsets(top: 8, left: 18, bottom: 16, right: 14)
-    public var outgoingMessageLabelInsets = UIEdgeInsets(top: 8, left: 14, bottom: 16, right: 18)
+    public var incomingMessageLabelInsets = UIEdgeInsets(top: 16, left: 18, bottom: 16, right: 14)
+    public var outgoingMessageLabelInsets = UIEdgeInsets(top: 16, left: 14, bottom: 16, right: 18)
 
     public var messageLabelFont = UIFont.preferredFont(forTextStyle: .body)
 

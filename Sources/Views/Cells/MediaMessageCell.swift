@@ -23,6 +23,8 @@
  */
 
 import UIKit
+import Nuke
+
 
 /// A subclass of `MessageContentCell` used to display video and audio messages.
 open class MediaMessageCell: MessageContentCell {
@@ -41,7 +43,9 @@ open class MediaMessageCell: MessageContentCell {
     }()
     
     open var collectionSubview: UIView = UIView()
-
+    
+    open var imageRects: [CGRect] = []
+    
     // MARK: - Methods
 
     /// Responsible for setting up the constraints of the cell's subviews.
@@ -60,21 +64,31 @@ open class MediaMessageCell: MessageContentCell {
         setupConstraints()
     }
 
+    
+    
     open override func configure(with message: MessageType, at indexPath: IndexPath, and messagesCollectionView: MessagesCollectionView) {
         super.configure(with: message, at: indexPath, and: messagesCollectionView)
 
         guard let displayDelegate = messagesCollectionView.messagesDisplayDelegate else {
             fatalError(MessageKitError.nilMessagesDisplayDelegate)
         }
-
+        self.imageRects = []
         collectionSubview.subviews.forEach { view in
             view.removeFromSuperview()
         }
         
         switch message.kind {
         case .photo(let mediaItem):
-            imageView.image = mediaItem.image ?? mediaItem.placeholderImage
+            Nuke.loadImage(with: mediaItem.url!,
+                           options: ImageLoadingOptions(
+                                placeholder: mediaItem.placeholderImage,
+                                transition: .fadeIn(duration: 0.33)
+                           ),
+                           into: imageView,
+                           progress: nil,
+                           completion: nil)
             playButtonView.isHidden = true
+            self.imageRects = [self.imageView.frame]
             break
         case .video(let mediaItem):
             imageView.image = mediaItem.image ?? mediaItem.placeholderImage
@@ -120,12 +134,21 @@ open class MediaMessageCell: MessageContentCell {
             default:break
             }
             var mediaId: Int = 0
+            self.imageRects = rects
             rects.forEach { rect in
                 let view = UIImageView(frame: rect)
-                view.image = mediaItems[mediaId].image ?? mediaItems[mediaId].placeholderImage
+                Nuke.loadImage(with: mediaItems[mediaId].url!,
+                               options: ImageLoadingOptions(
+                                    placeholder: mediaItems[mediaId].placeholderImage,
+                                    transition: .fadeIn(duration: 0.33)
+                               ),
+                               into: view,
+                               progress: nil,
+                               completion: nil)
                 view.contentMode = .scaleAspectFill
                 view.clipsToBounds = true
                 view.layer.masksToBounds = true
+                view.tag = mediaId
                 mediaId += 1
                 if mediaId == 6 && mediaItems.count > 6 {
                     let toner = UIView(frame: view.bounds)
@@ -147,4 +170,32 @@ open class MediaMessageCell: MessageContentCell {
 
         displayDelegate.configureMediaMessageImageView(imageView, for: message, at: indexPath, in: messagesCollectionView)
     }
+    
+    
+    override open func handleTapGesture(_ gesture: UIGestureRecognizer) {
+        let touchLocation = gesture.location(in: self)
+        var isTapHandled: Bool = false
+        switch true {
+        case messageContainerView.frame.contains(touchLocation) && !cellContentView(canHandle: convert(touchLocation, to: messageContainerView)):
+//            delegate?.didTapMessage(in: self)
+            self.imageRects.forEach { rect in
+                if rect.contains(touchLocation) {
+                    self.delegate?.didTapImage(cell: self, at: self.imageRects.firstIndex(of: rect) ?? 0)
+                }
+            }
+            isTapHandled = true
+        case messageTopLabel.frame.contains(touchLocation):
+            delegate?.didTapMessageTopLabel(in: self)
+            isTapHandled = true
+        case messageBottomLabel.frame.contains(touchLocation):
+            delegate?.didTapMessageBottomLabel(in: self)
+            isTapHandled = true
+        default:
+            break
+        }
+        if self.contentView.frame.contains(touchLocation) && !isTapHandled {
+            delegate?.didTap(in: self)
+        }
+    }
+    
 }

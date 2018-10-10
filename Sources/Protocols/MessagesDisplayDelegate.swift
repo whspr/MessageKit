@@ -66,6 +66,7 @@ public protocol MessagesDisplayDelegate: AnyObject {
     
     // if nil, hide forwarded indicator
     func forwardedFillColor(for message: MessageType, at  indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> UIColor?
+    func forwardedBackgroundColor(for message: MessageType, at  indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> UIColor
     
     func deliveryIndicatorImage(for message: MessageType, at  indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> UIImage?
     
@@ -193,6 +194,10 @@ public extension MessagesDisplayDelegate {
     
     func forwardedFillColor(for message: MessageType, at  indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> UIColor? {
         return nil
+    }
+    
+    func forwardedBackgroundColor(for message: MessageType, at  indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> UIColor {
+        return UIColor.blue.withAlphaComponent(0.05)
     }
     
     func deliveryIndicatorImage(for message: MessageType, at  indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> UIImage? {
